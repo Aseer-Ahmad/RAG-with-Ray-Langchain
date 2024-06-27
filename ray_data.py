@@ -5,8 +5,9 @@ from doc_process import download_all
 def ray_dataset(folder):
     # Ray dataset
     document_dir = Path(folder)
+    print("creating ray data from documents")
     ds = ray.data.from_items([{"path": path.absolute()} for path in document_dir.rglob("*.html") if not path.is_dir()])
-    print(f"{ds.count()} documents")
+    print(f"{ds.count()} documents processed")
 
 if __name__ == "__main__":
     working_dir = "downloaded_docs"
