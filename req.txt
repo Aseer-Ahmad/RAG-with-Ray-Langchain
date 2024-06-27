@@ -1,0 +1,11 @@
+ray
+langchain
+sentence-transformers
+qdrant-client
+einops
+openai
+tiktoken
+fastapi
+"ray[serve]"
+pandas
+pyarrow
