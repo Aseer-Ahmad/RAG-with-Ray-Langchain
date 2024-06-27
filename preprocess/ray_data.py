@@ -1,6 +1,6 @@
 from pathlib import Path
 import ray
-from doc_process import download_all
+from preprocess.doc_process import download_all
 from bs4 import BeautifulSoup, NavigableString
 
 def extract_text_from_element(element):
@@ -25,20 +25,24 @@ def extract_main_content(record):
     path = record["path"]
     return {"path": path, "text": text}
 
-def ray_dataset(folder):
+def ray_dataset(start_url, folder):
+
+    #process documents
+    download_all(start_url, folder, max_workers=10)
+
     # Ray dataset
     document_dir = Path(folder)
     print("creating ray data from documents")
     ds = ray.data.from_items([{"path": path.absolute()} for path in document_dir.rglob("*.html") if not path.is_dir()])
     print(f"{ds.count()} documents processed")
-    print(f"cleaning html files for text and adding to ray dataset")
+    print(f"cleaning html files for text and mapping to ray dataset")
     content_ds = ds.map(extract_main_content)
     content_ds.count()
+
+    return content_ds
 
 if __name__ == "__main__":
     working_dir = "downloaded_docs"
     start_url = "https://python.langchain.com/docs/expression_language/"
-    folder = working_dir
-    download_all(start_url, folder, max_workers=10)
-    ray_dataset(folder)
+    ray_dataset(start_url, working_dir)
 

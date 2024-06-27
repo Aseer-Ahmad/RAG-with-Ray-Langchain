@@ -63,7 +63,10 @@ def download_all(start_url, folder, max_workers=5):
 
 if __name__ == "__main__":
     working_dir = "downloaded_docs"
+
+    if not os.path.exists(working_dir):
+        os.makedirs(working_dir)
+
     start_url = "https://python.langchain.com/docs/expression_language/"
-    folder = working_dir
     setup_env()
-    download_all(start_url, folder, max_workers=10)
+    download_all(start_url, working_dir, max_workers=10)
