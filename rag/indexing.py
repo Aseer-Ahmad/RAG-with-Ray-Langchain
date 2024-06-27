@@ -31,15 +31,14 @@ def chunking(document, chunk_size, chunk_overlap):
     
     return [{"text": chunk.page_content, "path": chunk.metadata["path"]} for chunk in chunks]
 
-def indexer(working_dir, start_url):
-    content_ds = ray_dataset(working_dir, start_url)
+def indexer(content_ds):
 
-    # chunks_ds = content_ds.flat_map(partial(
-    #     chunking, 
-    #     chunk_size=512, 
-    #     chunk_overlap=50))
+    chunks_ds = content_ds.flat_map(partial(
+        chunking, 
+        chunk_size=512, 
+        chunk_overlap=50))
     
-    # print(f"{chunks_ds.count()} chunks")
+    print(f"{chunks_ds.count()} chunks")
     
     # embedded_chunks = chunks_ds.map_batches(
     #     EmbedChunks,
@@ -47,13 +46,5 @@ def indexer(working_dir, start_url):
     #     num_gpus=1,
     #     concurrency=1)
     
-
-    
-
-
-if __name__ == "__main__":
-    working_dir = "downloaded_docs"
-    start_url = "https://python.langchain.com/docs/expression_language/"
-    indexer(working_dir, start_url)
     
     

@@ -2,6 +2,7 @@ from pathlib import Path
 import ray
 from preprocess.doc_process import download_all
 from bs4 import BeautifulSoup, NavigableString
+from env import setup_env
 
 def extract_text_from_element(element):
     texts = []
@@ -44,5 +45,6 @@ def ray_dataset(start_url, folder):
 if __name__ == "__main__":
     working_dir = "downloaded_docs"
     start_url = "https://python.langchain.com/docs/expression_language/"
+    setup_env()
     ray_dataset(start_url, working_dir)
 
