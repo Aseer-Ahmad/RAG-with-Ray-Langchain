@@ -9,11 +9,15 @@ def setup_env():
         os.makedirs(working_dir)
 
     os.environ["RAY_memory_usage_threshold"] = "1"
+    os.environ['CPU_OR_GPU'] = 'cpu'
     # Setting up our Ray environment
     ray.init(runtime_env={
         "env_vars": {
-            # "GOOGLE_API_KEY": os.environ["GOOGLE_API_KEY"],
-            # "LANGCHAIN_API_KEY":os.environ["LANGCHAIN_API_KEY"]
+            
+            "GOOGLE_API_KEY": open("/home/cepheus/Documents/API keys/googleai.txt", 'r').read()
+            "LANGCHAIN_API_KEY": open("/home/cepheus/Documents/API keys/langchain.txt", 'r').read()
         },
-        "working_dir": str(working_dir)
+        "working_dir": str(working_dir),
+        "num_cpus" : 1,
+        "num_gpus" : 0
     })

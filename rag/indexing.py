@@ -15,6 +15,7 @@ class EmbedChunks:
 
     def __call__(self, batch):
         embeddings = self.embedding_model.embed_documents(batch["text"])
+
         return {"text": batch["text"], "path": batch["path"], "embeddings": embeddings}
 
 def get_embedding_model():
@@ -46,8 +47,9 @@ def chunkEmbed(content_ds):
     
     embedded_chunks = chunks_ds.map_batches(
         EmbedChunks,
-        batch_size=50, 
-        num_gpus=1,
+        batch_size=50,
+        num_cpus=1, 
+        num_gpus=0,
         concurrency=1)
     
     print(f"embedding completed with  : {chunks_ds.count()} chunks")
@@ -58,7 +60,7 @@ def store_results(df, client, collection_name="documents"):
 
     print("creating points to begin indexing in Qdrant vector store.")
 
-	  # Defining our data structure
+    # Defining our data structure
     points = [
         # PointStruct is the data classs used in Qdrant
         PointStruct(
@@ -69,7 +71,7 @@ def store_results(df, client, collection_name="documents"):
                 "source": path
             }
         )
-        for text, path, embedding in df.iter_rows() #zip(df["text"], df["path"], df["embeddings"])
+        for text, path, embedding in zip(df["text"], df["path"], df["embeddings"])
     ]
 		
 		# Adding our data points to the collection
@@ -79,12 +81,12 @@ def store_results(df, client, collection_name="documents"):
     )
     print("all points added to Qdrant")
 
-@ray.remote
+# @ray.remote
 def indexer(content_ds):
 
     embedded_chunks = chunkEmbed(content_ds)
     embedded_chunks = embedded_chunks.to_pandas()
-    embedding_size = 256
+    embedding_size = 64
 
     # print(embedded_chunks.iter_rows())
     # count = 0
@@ -94,13 +96,11 @@ def indexer(content_ds):
     #         break
 
     # Initalizing a local client in-memory
-    # client = QdrantClient(":memory:")
+    client = QdrantClient(":memory:")
 
-    # client.recreate_collection(
-    #     collection_name="documents",
-    #     vectors_config=VectorParams(size=embedding_size, distance=Distance.COSINE),
-    # )
+    client.recreate_collection(
+        collection_name="documents",
+        vectors_config=VectorParams(size=embedding_size, distance=Distance.COSINE),
+    )
 
-    # print(embedded_chunks)
-
-    # store_results(embedded_chunks, client)
+    store_results(embedded_chunks, client)
