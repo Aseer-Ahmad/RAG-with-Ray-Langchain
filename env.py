@@ -14,7 +14,7 @@ def setup_env():
     ray.init(runtime_env={
         "env_vars": {
             
-            "GOOGLE_API_KEY": open("/home/cepheus/Documents/API keys/googleai.txt", 'r').read()
+            "GOOGLE_API_KEY": open("/home/cepheus/Documents/API keys/googleai.txt", 'r').read(),
             "LANGCHAIN_API_KEY": open("/home/cepheus/Documents/API keys/langchain.txt", 'r').read()
         },
         "working_dir": str(working_dir),
